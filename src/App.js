@@ -1,26 +1,39 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Router, Link } from "@reach/router";
+
+import Amplify from 'aws-amplify';
+import awsconfig from './aws-exports';
+import { withAuthenticator } from 'aws-amplify-react';
+import useAmplifyAuth from './useAmplifyAuth';
+
+import Albums from './Albums';
+import AlbumDetail from './AlbumDetail';
+
+Amplify.configure(awsconfig);
 
 function App() {
+  const { state: { user }, onSignOut } = useAmplifyAuth();
+
+  function UserData(props) {
+    return !user ? (
+      <div></div>
+    ) : (
+      <div>Welcome {user.attributes.email} (<a href="/signout" onClick={onSignOut}>Sign Out</a>)</div>
+    );
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1><Link to=''>Amplify Photo Album</Link></h1>
+      <UserData></UserData>
+      <hr />
+
+      <Router>
+        <Albums path='/' />
+        <AlbumDetail path='/album/:albumId'/>
+      </Router>
     </div>
   );
 }
 
-export default App;
+export default withAuthenticator(App, { signUpConfig: { hiddenDefaults: ['phone_number'] } });
