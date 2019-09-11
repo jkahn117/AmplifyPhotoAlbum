@@ -1,0 +1,52 @@
+type User
+  @model(subscriptions: null)
+  @auth(
+    rules: [
+      { allow: owner, ownerField: "id", operations: [create, update, delete] }
+    ]
+  )
+{
+  id: ID!
+  username: String!
+  albums: [Album] @connection
+}
+
+type Album
+  @model
+  @auth(rules: [{ allow: owner, ownerField: "createdBy" }])
+{
+  id: ID!
+  createdBy: ID!
+  name: String!
+  createdAt: String
+  updatedAt: String
+  photos: [Photo] @connection(name: "AlbumPhotos", sortField: "createdAt")
+}
+
+type Photo
+  @model
+  @auth(rules: [{ allow: owner }])
+{
+  id: ID!
+  createdAt: String
+  updatedAt: String
+  album: Album @connection(name: "AlbumPhotos", sortField: "createdAt")
+  fullsize: S3Object!
+  thumbnail: S3Object
+  contentType: String
+  gps: GPS
+  height: Int
+  width: Int
+}
+
+type S3Object {
+  region: String!
+  bucket: String!
+  key: String!
+}
+
+type GPS {
+  latitude: String!
+  longitude: String!
+  altitude: Int!
+}

@@ -7,6 +7,14 @@ import { listAlbums as listAlbumsQuery } from './graphql/queries';
 import { createAlbum as createAlbumMutation } from './graphql/mutations';
 import { onCreateAlbum } from './graphql/subscriptions';
 
+import {
+  Button,
+  Form,
+  Grid,
+  Header,
+  Input
+} from 'semantic-ui-react';
+
 const initalState = {
   albums: [],
   error: null,
@@ -22,6 +30,8 @@ function reducer(state, action) {
       return { ...state, albums: [ ...state.albums, action.album ] }
     case 'input':
       return { ...state, [action.inputValue]: action.value }  
+    case 'reset':
+        return { ...state, [action.inputValue]: '' }
     case 'error':
       return { ...state, error: true }
     default:
@@ -54,6 +64,7 @@ async function createAlbum(user, state, dispatch) {
 
   try {
     await API.graphql(graphqlOperation(createAlbumMutation, { input: newAlbum }));
+    dispatch({ type: 'reset' });
     console.log('New album created');
   } catch (error) {
     dispatch({ type: 'error' });
@@ -65,7 +76,21 @@ function update(value, inputValue, dispatch) {
   dispatch({ type: 'input', value, inputValue });
 }
 
-function Albums() {
+function AlbumList(props) {
+  return (
+    <ul>
+      {
+        props.albums.map((album, i) => (
+          <li key={i}>
+            <Link to={'/album/' + album.id}>{album.name}</Link>
+          </li>
+        ))
+      }
+    </ul>
+  );
+}
+
+function Albums(props) {
   const [state, dispatch] = useReducer(reducer, initalState);
   const { state: { user } } = useAmplifyAuth();
 
@@ -88,24 +113,31 @@ function Albums() {
 
   return (
     <div>
-      <ul>
-        {
-          state.albums.map((album, i) => (
-            <li key={i}>
-              <Link to={'/album/' + album.id}>{album.name}</Link>
-            </li>
-          ))
-        }
-      </ul>
+      <Header as='h1'>My Albums</Header>
 
-      <hr />
+      <Grid divided>
+        <Grid.Row>
+          <Grid.Column width={8}>
+            <AlbumList albums={state.albums} />
+          </Grid.Column>
 
-      <h2>Create Album</h2>
-      <input type="text"
-            placeholder="title"
-            onChange={e => update(e.target.value, 'newAlbumName', dispatch)}
-            value={state.newAlbumName} />
-      <button onClick={() => createAlbum(user, state, dispatch)}>create</button>
+          <Grid.Column width={4}>
+            <Header as='h3'>Create Album</Header>
+
+            <Form>
+              <Form.Field>
+                <label>Name</label>
+                <Input placeholder='name'
+                  onChange={ e => update(e.target.value, 'newAlbumName', dispatch) }
+                  value={ state.newAlbumName } />
+              </Form.Field>
+              <Button primary onClick={() => createAlbum(user, state, dispatch)}>
+                Create
+              </Button>
+            </Form>
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
     </div>
   )
 };

@@ -60,7 +60,7 @@ function useAmplifyAuth() {
 
     const onAuthEvent = (payload) => {
       switch(payload.event) {
-        case 'sigIn':
+        case 'signIn':
           // on signin, we want to rerun effect, trigger via flag
           if (isMounted) { setFetchTrigger(true); }
           break;

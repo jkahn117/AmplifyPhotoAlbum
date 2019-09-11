@@ -1,15 +1,16 @@
 import React from 'react';
 import { Router, Link } from "@reach/router";
 
-import Amplify from 'aws-amplify';
-import awsconfig from './aws-exports';
 import { withAuthenticator } from 'aws-amplify-react';
 import useAmplifyAuth from './useAmplifyAuth';
-
 import Albums from './Albums';
 import AlbumDetail from './AlbumDetail';
 
-Amplify.configure(awsconfig);
+import {
+  Container,
+  Menu
+} from 'semantic-ui-react';
+
 
 function App() {
   const { state: { user }, onSignOut } = useAmplifyAuth();
@@ -18,20 +19,32 @@ function App() {
     return !user ? (
       <div></div>
     ) : (
-      <div>Welcome {user.attributes.email} (<a href="/signout" onClick={onSignOut}>Sign Out</a>)</div>
+      <div>Welcome {user.username} (<Link to="/" onClick={onSignOut}>Sign Out</Link>)</div>
     );
   }
 
   return (
     <div>
-      <h1><Link to=''>Amplify Photo Album</Link></h1>
-      <UserData></UserData>
-      <hr />
+      <Menu fixed='top' borderless inverted>
+        <Container>
+          <Menu.Item as={Link} to='/' header>
+            Amplify Photo Album
+          </Menu.Item>
 
-      <Router>
-        <Albums path='/' />
-        <AlbumDetail path='/album/:albumId'/>
-      </Router>
+          <Menu.Menu position='right'>
+            <Menu.Item>
+              <UserData></UserData>
+            </Menu.Item>
+          </Menu.Menu>
+        </Container>
+      </Menu>
+
+      <Container text style={{ marginTop: '5em' }}>
+        <Router>
+          <Albums path='/' />
+          <AlbumDetail path='/album/:albumId'/>
+        </Router>
+      </Container>      
     </div>
   );
 }
