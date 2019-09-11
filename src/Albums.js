@@ -15,67 +15,6 @@ import {
   Input
 } from 'semantic-ui-react';
 
-const initalState = {
-  albums: [],
-  error: null,
-  // form inputs for new album...
-  newAlbumName: ''
-};
-
-function reducer(state, action) {
-  switch(action.type) {
-    case 'set':
-      return { ...state, albums: action.albums }
-    case 'add':
-      return { ...state, albums: [ ...state.albums, action.album ] }
-    case 'input':
-      return { ...state, [action.inputValue]: action.value }  
-    case 'reset':
-        return { ...state, [action.inputValue]: '' }
-    case 'error':
-      return { ...state, error: true }
-    default:
-      new Error();
-  }
-}
-
-async function listAlbums(dispatch) {
-  try {
-    const albumsData = await API.graphql(graphqlOperation(listAlbumsQuery));
-    dispatch({ type: 'set', albums: albumsData.data.listAlbums.items })
-  } catch(error) {
-    dispatch({ type: 'error' });
-    console.error('[ERROR - listAlbums] ', error);
-  }
-}
-
-async function createAlbum(user, state, dispatch) {
-  const { newAlbumName } = state;
-  const newAlbum = {
-    name: newAlbumName,
-    createdBy: user.username
-  }
-
-// taking this out for now to avoid duplication when creating new...
-// in his sample, nader does not add in subscription if this client app created the 
-// object. hard to do that here with related objects....??
-  // const updatedAlbums = [ ...state.albums, newAlbum ];
-  // dispatch({ type: 'set', albums: updatedAlbums });
-
-  try {
-    await API.graphql(graphqlOperation(createAlbumMutation, { input: newAlbum }));
-    dispatch({ type: 'reset' });
-    console.log('New album created');
-  } catch (error) {
-    dispatch({ type: 'error' });
-    console.error('[ERROR - createAlbum] ', error);
-  }
-}
-
-function update(value, inputValue, dispatch) {
-  dispatch({ type: 'input', value, inputValue });
-}
-
 function AlbumList(props) {
   return (
     <ul>
@@ -91,6 +30,13 @@ function AlbumList(props) {
 }
 
 function Albums(props) {
+  const initalState = {
+    albums: [],
+    error: null,
+    // form inputs for new album...
+    newAlbumName: ''
+  };
+
   const [state, dispatch] = useReducer(reducer, initalState);
   const { state: { user } } = useAmplifyAuth();
 
@@ -110,6 +56,60 @@ function Albums(props) {
   useEffect(() => {
     listAlbums(dispatch)
   }, []);
+  
+  function reducer(state, action) {
+    switch(action.type) {
+      case 'set':
+        return { ...state, albums: action.albums }
+      case 'add':
+        return { ...state, albums: [ ...state.albums, action.album ] }
+      case 'input':
+        return { ...state, [action.inputValue]: action.value }  
+      case 'reset':
+          return { ...state, [action.inputValue]: '' }
+      case 'error':
+        return { ...state, error: true }
+      default:
+        new Error();
+    }
+  }
+  
+  async function listAlbums(dispatch) {
+    try {
+      const albumsData = await API.graphql(graphqlOperation(listAlbumsQuery));
+      dispatch({ type: 'set', albums: albumsData.data.listAlbums.items })
+    } catch(error) {
+      dispatch({ type: 'error' });
+      console.error('[ERROR - listAlbums] ', error);
+    }
+  }
+  
+  async function createAlbum(user, state, dispatch) {
+    const { newAlbumName } = state;
+    const newAlbum = {
+      name: newAlbumName,
+      createdBy: user.username
+    }
+  
+  // taking this out for now to avoid duplication when creating new...
+  // in his sample, nader does not add in subscription if this client app created the 
+  // object. hard to do that here with related objects....??
+    // const updatedAlbums = [ ...state.albums, newAlbum ];
+    // dispatch({ type: 'set', albums: updatedAlbums });
+  
+    try {
+      await API.graphql(graphqlOperation(createAlbumMutation, { input: newAlbum }));
+      dispatch({ type: 'reset' });
+      console.log('New album created');
+    } catch (error) {
+      dispatch({ type: 'error' });
+      console.error('[ERROR - createAlbum] ', error);
+    }
+  }
+  
+  function update(value, inputValue, dispatch) {
+    dispatch({ type: 'input', value, inputValue });
+  }
 
   return (
     <div>
