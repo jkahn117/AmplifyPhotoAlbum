@@ -25,7 +25,12 @@ type Album
 
 type Photo
   @model
-  @auth(rules: [{ allow: owner }])
+  @auth(
+    rules: [
+      { allow: owner },
+      { allow: private, provider: iam, operations: [ read, update ] }
+    ]
+  )
 {
   id: ID!
   createdAt: String
@@ -39,7 +44,7 @@ type Photo
   width: Int
 }
 
-type S3Object {
+type S3Object @aws_iam @aws_cognito_user_pools {
   region: String!
   bucket: String!
   key: String!
@@ -48,5 +53,5 @@ type S3Object {
 type GPS {
   latitude: String!
   longitude: String!
-  altitude: Int!
+  altitude: Float!
 }

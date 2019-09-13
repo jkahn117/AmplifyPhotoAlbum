@@ -98,6 +98,7 @@ export const createAlbum = `mutation CreateAlbum($input: CreateAlbumInput!) {
         }
         height
         width
+        owner
       }
       nextToken
     }
@@ -141,6 +142,7 @@ export const updateAlbum = `mutation UpdateAlbum($input: UpdateAlbumInput!) {
         }
         height
         width
+        owner
       }
       nextToken
     }
@@ -184,6 +186,7 @@ export const deleteAlbum = `mutation DeleteAlbum($input: DeleteAlbumInput!) {
         }
         height
         width
+        owner
       }
       nextToken
     }
@@ -209,6 +212,7 @@ export const createPhoto = `mutation CreatePhoto($input: CreatePhotoInput!) {
           contentType
           height
           width
+          owner
         }
         nextToken
       }
@@ -231,50 +235,7 @@ export const createPhoto = `mutation CreatePhoto($input: CreatePhotoInput!) {
     }
     height
     width
-  }
-}
-`;
-export const updatePhoto = `mutation UpdatePhoto($input: UpdatePhotoInput!) {
-  updatePhoto(input: $input) {
-    id
-    createdAt
-    updatedAt
-    album {
-      id
-      createdBy
-      name
-      createdAt
-      updatedAt
-      photos {
-        items {
-          id
-          createdAt
-          updatedAt
-          contentType
-          height
-          width
-        }
-        nextToken
-      }
-    }
-    fullsize {
-      region
-      bucket
-      key
-    }
-    thumbnail {
-      region
-      bucket
-      key
-    }
-    contentType
-    gps {
-      latitude
-      longitude
-      altitude
-    }
-    height
-    width
+    owner
   }
 }
 `;
@@ -297,6 +258,7 @@ export const deletePhoto = `mutation DeletePhoto($input: DeletePhotoInput!) {
           contentType
           height
           width
+          owner
         }
         nextToken
       }
@@ -319,6 +281,53 @@ export const deletePhoto = `mutation DeletePhoto($input: DeletePhotoInput!) {
     }
     height
     width
+    owner
+  }
+}
+`;
+export const updatePhoto = `mutation UpdatePhoto($input: UpdatePhotoInput!) {
+  updatePhoto(input: $input) {
+    id
+    createdAt
+    updatedAt
+    album {
+      id
+      createdBy
+      name
+      createdAt
+      updatedAt
+      photos {
+        items {
+          id
+          createdAt
+          updatedAt
+          contentType
+          height
+          width
+          owner
+        }
+        nextToken
+      }
+    }
+    fullsize {
+      region
+      bucket
+      key
+    }
+    thumbnail {
+      region
+      bucket
+      key
+    }
+    contentType
+    gps {
+      latitude
+      longitude
+      altitude
+    }
+    height
+    width
+    owner
   }
 }
 `;

@@ -19,14 +19,17 @@ import { createPhoto as createPhotoMutation } from './graphql/mutations';
 
 function PhotoCard(props) {
   const [src, setSrc] = useState('');
+  const { createdAt, gps, thumbnail } = props.photo;
 
   return (
     <Card>
-      <S3Image hidden level='protected' imgKey={ props.photo.fullsize.key } onLoad={ url => setSrc(url) } />
+      <S3Image hidden level='protected' imgKey={ thumbnail.key } onLoad={ url => setSrc(url) } />
       <Image src={ src } />
       <Card.Content extra>
-        <p><Icon name='calendar' /> { props.photo.createdAt }</p>
-        <p><Icon name='globe' /> geolocation</p>
+        <p><Icon name='calendar' /> { createdAt }</p>
+        { gps &&
+            <p><Icon name='globe' /> { gps.latitude } { gps.longitude } </p>
+        }
       </Card.Content>
     </Card>
   )
@@ -106,7 +109,8 @@ function AlbumDetail(props) {
       const photoId = uuid();
       const key = `images/${photoId}.${extension}`;
   
-      const inputData = { 
+      const inputData = {
+        id: photoId,
         photoAlbumId: state.album.id,
         contentType: mimeType,
         fullsize: {
@@ -119,7 +123,7 @@ function AlbumDetail(props) {
       try {
         await Storage.put(key, file, { level: 'protected', contentType: mimeType, metadata: { albumId: state.album.id, photoId } });
         await API.graphql(graphqlOperation(createPhotoMutation, { input: inputData }));
-        console.log('successfully created photo');
+        console.log(`Successfully created photo - ${photoId}`);
         dispatch({ type: 'closeModal' });
       } catch(error) {
         console.error('[ERROR - createPhoto] ', error)

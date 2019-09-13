@@ -38,6 +38,7 @@ export const onCreateAlbum = `subscription OnCreateAlbum {
         }
         height
         width
+        owner
       }
       nextToken
     }
@@ -81,6 +82,7 @@ export const onUpdateAlbum = `subscription OnUpdateAlbum {
         }
         height
         width
+        owner
       }
       nextToken
     }
@@ -124,14 +126,15 @@ export const onDeleteAlbum = `subscription OnDeleteAlbum {
         }
         height
         width
+        owner
       }
       nextToken
     }
   }
 }
 `;
-export const onCreatePhoto = `subscription OnCreatePhoto {
-  onCreatePhoto {
+export const onCreatePhoto = `subscription OnCreatePhoto($owner: String!) {
+  onCreatePhoto(owner: $owner) {
     id
     createdAt
     updatedAt
@@ -149,6 +152,7 @@ export const onCreatePhoto = `subscription OnCreatePhoto {
           contentType
           height
           width
+          owner
         }
         nextToken
       }
@@ -171,11 +175,12 @@ export const onCreatePhoto = `subscription OnCreatePhoto {
     }
     height
     width
+    owner
   }
 }
 `;
-export const onUpdatePhoto = `subscription OnUpdatePhoto {
-  onUpdatePhoto {
+export const onDeletePhoto = `subscription OnDeletePhoto($owner: String!) {
+  onDeletePhoto(owner: $owner) {
     id
     createdAt
     updatedAt
@@ -193,6 +198,7 @@ export const onUpdatePhoto = `subscription OnUpdatePhoto {
           contentType
           height
           width
+          owner
         }
         nextToken
       }
@@ -215,11 +221,12 @@ export const onUpdatePhoto = `subscription OnUpdatePhoto {
     }
     height
     width
+    owner
   }
 }
 `;
-export const onDeletePhoto = `subscription OnDeletePhoto {
-  onDeletePhoto {
+export const onUpdatePhoto = `subscription OnUpdatePhoto($owner: String!) {
+  onUpdatePhoto(owner: $owner) {
     id
     createdAt
     updatedAt
@@ -237,6 +244,7 @@ export const onDeletePhoto = `subscription OnDeletePhoto {
           contentType
           height
           width
+          owner
         }
         nextToken
       }
@@ -259,6 +267,7 @@ export const onDeletePhoto = `subscription OnDeletePhoto {
     }
     height
     width
+    owner
   }
 }
 `;

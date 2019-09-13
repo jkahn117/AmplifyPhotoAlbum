@@ -1,38 +1,38 @@
 {
-    "Records": [
-      {
-        "eventVersion": "2.1",
-        "eventSource": "aws:s3",
-        "awsRegion": "us-east-2",
-        "eventTime": "2019-08-28T02:16:25.144Z",
-        "eventName": "ObjectCreated:Put",
-        "userIdentity": {
-          "principalId": "AWS:AROAXDEEZUU3E7D6A76OH:CognitoIdentityCredentials"
-        },
-        "requestParameters": {
-          "sourceIPAddress": "52.95.4.9"
-        },
-        "responseElements": {
-          "x-amz-request-id": "2FCEE5645D52216B",
-          "x-amz-id-2": "wGj9SQmSUL9/qxsPEZyoUn6PT4t04ZUTNc7g7clSczkHhHj8RKawZaHq+6hISKE2T90s3Ls3TI0="
-        },
-        "s3": {
-          "s3SchemaVersion": "1.0",
-          "configurationId": "ec3699b8-9dd5-4089-8e94-8bbad7c47757",
-          "bucket": {
-            "name": "amplifyphotos74fcf5211f324b0aa1ddcda416fee4f8-dev",
-            "ownerIdentity": {
-              "principalId": "A8H59UB65AC38"
-            },
-            "arn": "arn:aws:s3:::amplifyphotos74fcf5211f324b0aa1ddcda416fee4f8-dev"
+  "Records": [
+    {
+      "eventVersion": "2.1",
+      "eventSource": "aws:s3",
+      "awsRegion": "us-east-2",
+      "eventTime": "2019-08-28T02:16:25.144Z",
+      "eventName": "ObjectCreated:Put",
+      "userIdentity": {
+        "principalId": "AWS:AROAXDEEZUU3E7D6A76OH:CognitoIdentityCredentials"
+      },
+      "requestParameters": {
+        "sourceIPAddress": "52.95.4.9"
+      },
+      "responseElements": {
+        "x-amz-request-id": "2FCEE5645D52216B",
+        "x-amz-id-2": "wGj9SQmSUL9/qxsPEZyoUn6PT4t04ZUTNc7g7clSczkHhHj8RKawZaHq+6hISKE2T90s3Ls3TI0="
+      },
+      "s3": {
+        "s3SchemaVersion": "1.0",
+        "configurationId": "ec3699b8-9dd5-4089-8e94-8bbad7c47757",
+        "bucket": {
+          "name": "amplifyphotos74fcf5211f324b0aa1ddcda416fee4f8-dev",
+          "ownerIdentity": {
+            "principalId": "A8H59UB65AC38"
           },
-          "object": {
-            "key": "public/images/24b98b64-aa9e-45cc-98f1-c7ec2c0583e3-full.png",
-            "size": 584800,
-            "eTag": "6a2bed52f97c46dce422089e99b57a9a",
-            "sequencer": "005D65E3F90491FD1E"
-          }
+          "arn": "arn:aws:s3:::amplifyphotos74fcf5211f324b0aa1ddcda416fee4f8-dev"
+        },
+        "object": {
+          "key": "protected/us-east-2:f205fc3d-5162-4d60-8453-7ccf90cbfd56/images/6d5c840f-4c4b-434f-8b07-15580ffb04ed.jpg",
+          "size": 584800,
+          "eTag": "6a2bed52f97c46dce422089e99b57a9a",
+          "sequencer": "005D65E3F90491FD1E"
         }
       }
-    ]
-  }
+    }
+  ]
+}

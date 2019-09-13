@@ -82,6 +82,7 @@ export const getAlbum = `query GetAlbum($id: ID!) {
         }
         height
         width
+        owner
       }
       nextToken
     }
@@ -108,6 +109,7 @@ export const listAlbums = `query ListAlbums(
           contentType
           height
           width
+          owner
         }
         nextToken
       }
@@ -135,6 +137,7 @@ export const getPhoto = `query GetPhoto($id: ID!) {
           contentType
           height
           width
+          owner
         }
         nextToken
       }
@@ -157,6 +160,7 @@ export const getPhoto = `query GetPhoto($id: ID!) {
     }
     height
     width
+    owner
   }
 }
 `;
@@ -198,6 +202,7 @@ export const listPhotos = `query ListPhotos(
       }
       height
       width
+      owner
     }
     nextToken
   }

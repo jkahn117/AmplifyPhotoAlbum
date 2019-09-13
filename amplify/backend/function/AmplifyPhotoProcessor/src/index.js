@@ -6,31 +6,20 @@ var apiAmplifyPhotosApiGraphQLAPIIdOutput = process.env.API_AMPLIFYPHOTOSAPI_GRA
 var apiAmplifyPhotosApiGraphQLAPIEndpointOutput = process.env.API_AMPLIFYPHOTOSAPI_GRAPHQLAPIENDPOINTOUTPUT
 
 Amplify Params - DO NOT EDIT */
+const AWS = require('aws-sdk');
+const axios = require('axios');
+const aws4 = require('aws4');
+const urlParse = require('url').URL;
 const sharp = require('sharp');
 const exifReader = require('exif-reader');
-const S3 = require('aws-sdk/clients/s3');
 
-require('isomorphic-fetch');
-const AWS = require('aws-sdk/global');
-const AUTH_TYPE = require('aws-appsync/lib/link/auth-link').AUTH_TYPE;
-const AWSAppSyncClient = require('aws-appsync').default;
-const gql = require('graphql-tag');
+const appSyncUrl = process.env.API_AMPLIFYPHOTOSAPI_GRAPHQLAPIENDPOINTOUTPUT;
+const appSyncHost = new urlParse(appSyncUrl).hostname.toString();
 
 const THUMBNAIL_WIDTH = 300;
 const THUMBNAIL_HEIGHT = 300;
 
-const APPSYNC_CONFIG = {
-  url: process.env.API_AMPLIFYPHOTOSAPI_GRAPHQLAPIENDPOINTOUTPUT,
-  region: process.env.REGION,
-  auth: {
-    type: AUTH_TYPE.AWS_IAM,
-    credentials: AWS.config.credentials
-  },
-  disableOffline: true
-};
-
 let s3Client = null;
-let appSyncClient = null;
 
 //
 // Load image from S3 by passing bucket and key.
@@ -54,7 +43,11 @@ async function createThumbnail(bucket, key, image) {
                         .toBuffer();
               
     await s3Client.putObject({ Bucket: bucket, Key: thumbKey, Body: thumb }).promise();
-    return { bucket: bucket, key: thumbKey, region: process.env.REGION };
+    return {
+      bucket: bucket,
+      key: thumbKey.substring(thumbKey.indexOf('thumbs')),
+      region: process.env.REGION
+    };
   } catch (error) {
     console.error('[createThumbnail] ', error);
     throw error;
@@ -117,7 +110,7 @@ const updatePhotoMutation =
       longitude
       altitude
     }
-    thumb {
+    thumbnail {
       key
     }
   }
@@ -127,24 +120,38 @@ const updatePhotoMutation =
 // Store thumbnail and metadata via AppSync.
 //
 async function updatePhotoRecord(photoId, metadata, thumbnail) {
-  let updatePhoto = {
-    id: photoId,
-    ...metadata,
-    thumb: thumbnail
-  }
+  let mutation = {
+    query: updatePhotoMutation,
+    operationName: 'UpdatePhoto',
+    variables: {
+      input: {
+        id: photoId,
+        ...metadata,
+        thumbnail
+      }
+    }
+  };
 
-  console.log(updatePhoto);
+  let request = aws4.sign({
+    method: 'POST',
+    url: appSyncUrl,
+    host: appSyncHost,
+    path: '/graphql',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    service: 'appsync',
+    data: mutation,
+    body: JSON.stringify(mutation)
+  });
+  delete request.headers['Host'];
+  delete request.headers['Content-Length'];
 
-  try {
-    const result = await appSyncClient.mutate({
-      mutation: gql(updatePhotoMutation),
-      variables: { input: updatePhoto }
-    });
-
-    console.log(result.data);
-  } catch (error) {
-    console.error('[updatePhotoRecord] ', error);
-    throw error;
+  let result = await axios(request);
+  console.log(JSON.stringify(result.data));
+  if (result.errors && result.errors.length > 0) {
+    console.error(`[updatePhotoRecord] ${result.errors[0].message}`);
+    throw new Error(`AppSync error - ${result.errors[0].errorType}: ${result.errors[0].message}`);
   }
 }
 
@@ -152,27 +159,30 @@ async function updatePhotoRecord(photoId, metadata, thumbnail) {
 // Main handler for Lambda function.
 //
 exports.handler = async (event) => {
-  if (!s3Client)  { s3Client = new S3() }
-  if (!appSyncClient) { appSyncClient = new AWSAppSyncClient(APPSYNC_CONFIG) }
-
   const bucket = event.Records[0].s3.bucket.name; //eslint-disable-line
-  const key = event.Records[0].s3.object.key; //eslint-disable-line
+  const key = event.Records[0].s3.object.key.replace('%3A', ':'); //eslint-disable-line
+
+  if (key.indexOf('thumb') > 0) { return { status: 'skipped', key }; }
+
+  if (!s3Client)  { s3Client = new AWS.S3() }
 
   try {
     let image = await loadImage(bucket, key);
 
     // create a thumbnail of the original image and store in S3
-    let thumb = await createThumbnail(bucket, key, image.Body);
-
-    // capture metadata from original photo
-    let metadata = await getPhotoMetadata(image.Body);
+    // and capture metadata from original photo - take advantage of parallelism
+    let [thumb, metadata] = await Promise.all([
+        createThumbnail(bucket, key, image.Body),
+        getPhotoMetadata(image.Body)
+      ]);
 
     // finally, update the record in DynamoDB via AppSync
     await updatePhotoRecord(image.Metadata.photoid, metadata, thumb);
-  } catch (e) {
+  } catch (error) {
+    console.error(JSON.stringify(error));
     console.error('An error occurred');
-    return Error(e);
+    return error;
   }
 
-  return { success: true }
+  return { status: 'complete', key };
 };
