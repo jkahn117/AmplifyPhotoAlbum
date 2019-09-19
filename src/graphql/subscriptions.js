@@ -1,10 +1,10 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const onCreateAlbum = `subscription OnCreateAlbum {
-  onCreateAlbum {
+export const onCreateAlbum = `subscription OnCreateAlbum($owner: String!) {
+  onCreateAlbum(owner: $owner) {
     id
-    createdBy
+    owner
     name
     createdAt
     updatedAt
@@ -15,7 +15,7 @@ export const onCreateAlbum = `subscription OnCreateAlbum {
         updatedAt
         album {
           id
-          createdBy
+          owner
           name
           createdAt
           updatedAt
@@ -45,10 +45,10 @@ export const onCreateAlbum = `subscription OnCreateAlbum {
   }
 }
 `;
-export const onUpdateAlbum = `subscription OnUpdateAlbum {
-  onUpdateAlbum {
+export const onUpdateAlbum = `subscription OnUpdateAlbum($owner: String!) {
+  onUpdateAlbum(owner: $owner) {
     id
-    createdBy
+    owner
     name
     createdAt
     updatedAt
@@ -59,7 +59,7 @@ export const onUpdateAlbum = `subscription OnUpdateAlbum {
         updatedAt
         album {
           id
-          createdBy
+          owner
           name
           createdAt
           updatedAt
@@ -89,10 +89,10 @@ export const onUpdateAlbum = `subscription OnUpdateAlbum {
   }
 }
 `;
-export const onDeleteAlbum = `subscription OnDeleteAlbum {
-  onDeleteAlbum {
+export const onDeleteAlbum = `subscription OnDeleteAlbum($owner: String!) {
+  onDeleteAlbum(owner: $owner) {
     id
-    createdBy
+    owner
     name
     createdAt
     updatedAt
@@ -103,7 +103,7 @@ export const onDeleteAlbum = `subscription OnDeleteAlbum {
         updatedAt
         album {
           id
-          createdBy
+          owner
           name
           createdAt
           updatedAt
@@ -140,7 +140,7 @@ export const onCreatePhoto = `subscription OnCreatePhoto($owner: String!) {
     updatedAt
     album {
       id
-      createdBy
+      owner
       name
       createdAt
       updatedAt
@@ -186,7 +186,7 @@ export const onDeletePhoto = `subscription OnDeletePhoto($owner: String!) {
     updatedAt
     album {
       id
-      createdBy
+      owner
       name
       createdAt
       updatedAt
@@ -232,7 +232,7 @@ export const onUpdatePhoto = `subscription OnUpdatePhoto($owner: String!) {
     updatedAt
     album {
       id
-      createdBy
+      owner
       name
       createdAt
       updatedAt

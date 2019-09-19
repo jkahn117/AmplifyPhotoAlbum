@@ -1,0 +1,20 @@
+{
+    "appName": "amplifyphotos",
+    "roleName": "pinpointLambdaRolee50f8825",
+    "cloudWatchPolicyName": "cloudWatchPolicye50f8825",
+    "pinpointPolicyName": "pinpointPolicye50f8825",
+    "authPolicyName": "pinpoint_amplify_e50f8825",
+    "unauthPolicyName": "pinpoint_amplify_e50f8825",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    }
+}

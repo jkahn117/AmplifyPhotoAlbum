@@ -78,7 +78,7 @@
 				"MemorySize": 1536,
 				"Code": {
 					"S3Bucket": "amplifyphotos-dev-20190820102459-deployment",
-					"S3Key": "amplify-builds/AmplifyPhotoProcessor-41366f477774525a3072-build.zip"
+					"S3Key": "amplify-builds/AmplifyPhotoProcessor-374b43677470566b4674-build.zip"
 				}
 			}
 		},

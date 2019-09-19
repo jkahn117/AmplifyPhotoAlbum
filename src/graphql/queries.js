@@ -8,7 +8,7 @@ export const getUser = `query GetUser($id: ID!) {
     albums {
       items {
         id
-        createdBy
+        owner
         name
         createdAt
         updatedAt
@@ -33,7 +33,7 @@ export const listUsers = `query ListUsers(
       albums {
         items {
           id
-          createdBy
+          owner
           name
           createdAt
           updatedAt
@@ -48,7 +48,7 @@ export const listUsers = `query ListUsers(
 export const getAlbum = `query GetAlbum($id: ID!) {
   getAlbum(id: $id) {
     id
-    createdBy
+    owner
     name
     createdAt
     updatedAt
@@ -59,7 +59,7 @@ export const getAlbum = `query GetAlbum($id: ID!) {
         updatedAt
         album {
           id
-          createdBy
+          owner
           name
           createdAt
           updatedAt
@@ -97,7 +97,7 @@ export const listAlbums = `query ListAlbums(
   listAlbums(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      createdBy
+      owner
       name
       createdAt
       updatedAt
@@ -125,7 +125,7 @@ export const getPhoto = `query GetPhoto($id: ID!) {
     updatedAt
     album {
       id
-      createdBy
+      owner
       name
       createdAt
       updatedAt
@@ -176,7 +176,7 @@ export const listPhotos = `query ListPhotos(
       updatedAt
       album {
         id
-        createdBy
+        owner
         name
         createdAt
         updatedAt

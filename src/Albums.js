@@ -41,7 +41,9 @@ function Albums(props) {
   const { state: { user } } = useAmplifyAuth();
 
   useEffect(() => {
-    const subscription = API.graphql(graphqlOperation(onCreateAlbum)).subscribe({
+    if (!user) { return; }
+    const { username } = user;
+    const subscription = API.graphql(graphqlOperation(onCreateAlbum, { owner: username })).subscribe({
           next: (data) => {
             const album = data.value.data.onCreateAlbum;
             dispatch({ type: 'add', album });
@@ -51,7 +53,7 @@ function Albums(props) {
     return () => {
       subscription.unsubscribe();
     }
-  }, []);
+  }, [ user ]);
 
   useEffect(() => {
     listAlbums(dispatch)

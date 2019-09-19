@@ -13,10 +13,10 @@ type User
 
 type Album
   @model
-  @auth(rules: [{ allow: owner, ownerField: "createdBy" }])
+  @auth(rules: [{ allow: owner }])
 {
   id: ID!
-  createdBy: ID!
+  owner: ID!
   name: String!
   createdAt: String
   updatedAt: String

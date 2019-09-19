@@ -1,72 +1,78 @@
 {
-    "auth": {
-        "amplifyphotos6a5066d6": {
-            "service": "Cognito",
-            "providerPlugin": "awscloudformation",
-            "dependsOn": []
-        }
-    },
-    "function": {
-        "AmplifyPhotoProcessor": {
-            "service": "Lambda",
-            "providerPlugin": "awscloudformation",
-            "build": true,
-            "dependsOn": [
-                {
-                    "category": "api",
-                    "resourceName": "AmplifyPhotosApi",
-                    "attributes": [
-                        "GraphQLAPIIdOutput",
-                        "GraphQLAPIEndpointOutput"
-                    ]
-                }
-            ]
-        }
-    },
-    "storage": {
-        "AmplifyPhotosStorage": {
-            "service": "S3",
-            "providerPlugin": "awscloudformation",
-            "dependsOn": [
-                {
-                    "category": "function",
-                    "resourceName": "AmplifyPhotoProcessor",
-                    "attributes": [
-                        "Name",
-                        "Arn",
-                        "LambdaExecutionRole"
-                    ]
-                }
-            ]
-        }
-    },
-    "api": {
-        "AmplifyPhotosApi": {
-            "service": "AppSync",
-            "providerPlugin": "awscloudformation",
-            "output": {
-                "authConfig": {
-                    "additionalAuthenticationProviders": [
-                        {
-                            "authenticationType": "AWS_IAM"
-                        }
-                    ],
-                    "defaultAuthentication": {
-                        "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-                        "userPoolConfig": {
-                            "userPoolId": "authamplifyphotos6a5066d6"
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "predictions": {
-        "identifyEntities59ceb277": {
-            "providerPlugin": "awscloudformation",
-            "service": "Rekognition",
-            "dependsOn": [],
-            "identifyType": "identifyEntities"
-        }
-    }
+	"auth": {
+		"amplifyphotos6a5066d6": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": []
+		}
+	},
+	"function": {
+		"AmplifyPhotoProcessor": {
+			"service": "Lambda",
+			"providerPlugin": "awscloudformation",
+			"build": true,
+			"dependsOn": [
+				{
+					"category": "api",
+					"resourceName": "AmplifyPhotosApi",
+					"attributes": [
+						"GraphQLAPIIdOutput",
+						"GraphQLAPIEndpointOutput"
+					]
+				}
+			]
+		}
+	},
+	"storage": {
+		"AmplifyPhotosStorage": {
+			"service": "S3",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": [
+				{
+					"category": "function",
+					"resourceName": "AmplifyPhotoProcessor",
+					"attributes": [
+						"Name",
+						"Arn",
+						"LambdaExecutionRole"
+					]
+				}
+			]
+		}
+	},
+	"api": {
+		"AmplifyPhotosApi": {
+			"service": "AppSync",
+			"providerPlugin": "awscloudformation",
+			"output": {
+				"authConfig": {
+					"additionalAuthenticationProviders": [
+						{
+							"authenticationType": "AWS_IAM"
+						}
+					],
+					"defaultAuthentication": {
+						"authenticationType": "AMAZON_COGNITO_USER_POOLS",
+						"userPoolConfig": {
+							"userPoolId": "authamplifyphotos6a5066d6"
+						}
+					}
+				}
+			}
+		}
+	},
+	"predictions": {
+		"identifyEntities59ceb277": {
+			"providerPlugin": "awscloudformation",
+			"service": "Rekognition",
+			"dependsOn": [],
+			"identifyType": "identifyEntities"
+		}
+	},
+	"analytics": {
+		"amplifyphotos": {
+			"service": "Pinpoint",
+			"providerPlugin": "awscloudformation"
+		}
+	}
 }

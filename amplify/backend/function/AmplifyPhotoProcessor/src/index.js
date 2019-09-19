@@ -160,7 +160,7 @@ async function updatePhotoRecord(photoId, metadata, thumbnail) {
 //
 exports.handler = async (event) => {
   const bucket = event.Records[0].s3.bucket.name; //eslint-disable-line
-  const key = event.Records[0].s3.object.key.replace('%3A', ':'); //eslint-disable-line
+  const key = decodeURIComponent(event.Records[0].s3.object.key.replace(/+/g, " ")); //eslint-disable-line
 
   if (key.indexOf('thumb') > 0) { return { status: 'skipped', key }; }
 

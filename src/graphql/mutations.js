@@ -8,7 +8,7 @@ export const createUser = `mutation CreateUser($input: CreateUserInput!) {
     albums {
       items {
         id
-        createdBy
+        owner
         name
         createdAt
         updatedAt
@@ -28,7 +28,7 @@ export const updateUser = `mutation UpdateUser($input: UpdateUserInput!) {
     albums {
       items {
         id
-        createdBy
+        owner
         name
         createdAt
         updatedAt
@@ -48,7 +48,7 @@ export const deleteUser = `mutation DeleteUser($input: DeleteUserInput!) {
     albums {
       items {
         id
-        createdBy
+        owner
         name
         createdAt
         updatedAt
@@ -64,7 +64,7 @@ export const deleteUser = `mutation DeleteUser($input: DeleteUserInput!) {
 export const createAlbum = `mutation CreateAlbum($input: CreateAlbumInput!) {
   createAlbum(input: $input) {
     id
-    createdBy
+    owner
     name
     createdAt
     updatedAt
@@ -75,7 +75,7 @@ export const createAlbum = `mutation CreateAlbum($input: CreateAlbumInput!) {
         updatedAt
         album {
           id
-          createdBy
+          owner
           name
           createdAt
           updatedAt
@@ -108,7 +108,7 @@ export const createAlbum = `mutation CreateAlbum($input: CreateAlbumInput!) {
 export const updateAlbum = `mutation UpdateAlbum($input: UpdateAlbumInput!) {
   updateAlbum(input: $input) {
     id
-    createdBy
+    owner
     name
     createdAt
     updatedAt
@@ -119,7 +119,7 @@ export const updateAlbum = `mutation UpdateAlbum($input: UpdateAlbumInput!) {
         updatedAt
         album {
           id
-          createdBy
+          owner
           name
           createdAt
           updatedAt
@@ -152,7 +152,7 @@ export const updateAlbum = `mutation UpdateAlbum($input: UpdateAlbumInput!) {
 export const deleteAlbum = `mutation DeleteAlbum($input: DeleteAlbumInput!) {
   deleteAlbum(input: $input) {
     id
-    createdBy
+    owner
     name
     createdAt
     updatedAt
@@ -163,7 +163,7 @@ export const deleteAlbum = `mutation DeleteAlbum($input: DeleteAlbumInput!) {
         updatedAt
         album {
           id
-          createdBy
+          owner
           name
           createdAt
           updatedAt
@@ -200,7 +200,7 @@ export const createPhoto = `mutation CreatePhoto($input: CreatePhotoInput!) {
     updatedAt
     album {
       id
-      createdBy
+      owner
       name
       createdAt
       updatedAt
@@ -246,7 +246,7 @@ export const deletePhoto = `mutation DeletePhoto($input: DeletePhotoInput!) {
     updatedAt
     album {
       id
-      createdBy
+      owner
       name
       createdAt
       updatedAt
@@ -292,7 +292,7 @@ export const updatePhoto = `mutation UpdatePhoto($input: UpdatePhotoInput!) {
     updatedAt
     album {
       id
-      createdBy
+      owner
       name
       createdAt
       updatedAt

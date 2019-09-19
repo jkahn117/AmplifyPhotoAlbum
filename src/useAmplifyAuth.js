@@ -1,7 +1,7 @@
 // adapted from https://www.rockyourcode.com/custom-react-hook-use-aws-amplify-auth
 
 import { useReducer, useState, useEffect } from 'react';
-import { Auth, Hub } from 'aws-amplify';
+import { Analytics, Auth, Hub } from 'aws-amplify';
 
 const initalState = {
   isLoading: true,
@@ -58,9 +58,21 @@ function useAmplifyAuth() {
       });
     };
 
-    const onAuthEvent = (payload) => {
+    const onAuthEvent = async (payload) => {
       switch(payload.event) {
         case 'signIn':
+          const { data: { attributes }} = payload;
+          const now = new Date();
+          await Analytics.updateEndpoint({
+            address: attributes.email,
+            channelType: "EMAIL",
+            optOut: "NONE",
+            userId: attributes.sub,
+            userAttributes: {
+              lastLogin: [ `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}` ]
+            }
+          });
+
           // on signin, we want to rerun effect, trigger via flag
           if (isMounted) { setFetchTrigger(true); }
           break;
