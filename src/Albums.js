@@ -90,7 +90,7 @@ function Albums(props) {
     const { newAlbumName } = state;
     const newAlbum = {
       name: newAlbumName,
-      createdBy: user.username
+      owner: user.username
     }
   
   // taking this out for now to avoid duplication when creating new...
