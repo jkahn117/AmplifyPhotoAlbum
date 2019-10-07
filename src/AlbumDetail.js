@@ -1,29 +1,22 @@
 import React, { useEffect, useState, useReducer } from 'react';
+import { Button, Card, Header, Icon, Image, Message, Modal } from 'semantic-ui-react';
 import { API, Storage, graphqlOperation } from 'aws-amplify';
-import { S3Image } from 'aws-amplify-react';
+import { S3Image, PhotoPicker } from 'aws-amplify-react';
 import awsconfig from './aws-exports';
 import uuid from 'uuid/v4';
 
 import MLPhotoPickerModal from './MLPhotoPickerModal';
-
-import {
-  Button,
-  Card,
-  Header,
-  Icon,
-  Image
-} from 'semantic-ui-react';
 
 import { getAlbum as getAlbumQuery } from './graphql/queries';
 import { createPhoto as createPhotoMutation } from './graphql/mutations';
 
 function PhotoCard(props) {
   const [src, setSrc] = useState('');
-  const { createdAt, gps, thumbnail } = props.photo;
+  const { createdAt, gps, fullsize, thumbnail } = props.photo;
 
   return (
     <Card>
-      <S3Image hidden level='protected' imgKey={ thumbnail.key } onLoad={ url => setSrc(url) } />
+      <S3Image hidden level='protected' imgKey={ thumbnail ? thumbnail.key : fullsize.key } onLoad={ url => setSrc(url) } />
       <Image src={ src } />
       <Card.Content extra>
         <p><Icon name='calendar' /> { createdAt }</p>
@@ -45,7 +38,7 @@ function PhotoGrid(props) {
       }
     </Card.Group>
   );
-};
+}
 
 function AlbumDetail(props) {
   const {
@@ -56,37 +49,37 @@ function AlbumDetail(props) {
   const initalState = {
     album: {},
     photos: [],
+    // user interface
     isLoading: false,
-    modalOpen: false,
+    message: '',
     error: null
   };
 
+  const [openModal, showModal] = useState(false);
   const [state, dispatch] = useReducer(reducer, initalState);
 
   // add subscription for new photos in this album
 
   useEffect(() => {
-    dispatch({ type: 'init' })
-    getAlbum(props.albumId, dispatch)
+    dispatch({ type: 'init' });
+    getAlbum(props.albumId, dispatch);
   }, [props.albumId]);
   
   function reducer(state, action) {
     switch(action.type) {
       case 'init':
-        return { ...state, isLoading: true }
+        return { ...state, isLoading: true };
       case 'set':
         return { 
           ...state,
           isLoading: false,
           album: action.album,
           photos: action.album.photos.items ? action.album.photos.items : []
-      }
-      case 'openModal':
-        return { ...state, modalOpen: true }
-      case 'closeModal':
-        return { ...state, modalOpen: false }
+        };
+      case 'message':
+        return { ...state, message: action.message };
       case 'error':
-        return { ...state, error: true }
+        return { ...state, error: true };
       default:
         new Error();
     }
@@ -118,50 +111,47 @@ function AlbumDetail(props) {
           region: region,
           bucket: bucket
         }
-      }
+      };
   
       try {
         await Storage.put(key, file, { level: 'protected', contentType: mimeType, metadata: { albumId: state.album.id, photoId } });
         await API.graphql(graphqlOperation(createPhotoMutation, { input: inputData }));
+        dispatch({ type: 'message', message: 'New photo created successfully' });
         console.log(`Successfully created photo - ${photoId}`);
-        dispatch({ type: 'closeModal' });
+        showModal(false);
       } catch(error) {
-        console.error('[ERROR - createPhoto] ', error)
+        console.error('[ERROR - createPhoto] ', error);
       }
     }
-  }
-
-  function openModal() {
-    dispatch({ type: 'openModal' });
   }
 
   return state.isLoading ? (
     <p>loading...</p>
   ) : (
     <div>
-      { /* <CreatePhotoModal state={ state } dispatch={ dispatch } /> */ }
+      {/* <Modal size='small' closeIcon
+             open={openModal}
+             onClose={() => { showModal(false) }}
+             trigger={<Button primary floated='right' onClick={() => {showModal(true) }}>Add Photo</Button>}>
+        <Modal.Header>Upload Photo</Modal.Header>
+        <Modal.Content>
+          { state.message }
+          <PhotoPicker preview onPick={(data) => createPhoto(data, state, dispatch)} />
+        </Modal.Content>
+      </Modal>*/}
+      
       <MLPhotoPickerModal
-        open= { state.modalOpen }
-        trigger={ <Button primary floated='right' onClick={ openModal }>Add Photo</Button> }
-        onPick={ (data) => createPhoto(data, state, dispatch) }/>
-
+         open={openModal}
+         onClose={() => { showModal(false) }}
+         trigger={ <Button primary floated='right' onClick={() => {showModal(true) }}>Add Photo</Button> }
+         onPick={ (data) => createPhoto(data, state, dispatch) }/>
+    
       <Header as='h1'>{ state.album.name }</Header>
-
+      { state.message &&
+        <Message><p>{ state.message }</p></Message> }
       <PhotoGrid photos={ state.photos } />
     </div>
   );
-};
-
-// function CreatePhotoModal(props) {
-//   return (
-//     <Modal basic size='small' closeIcon
-//       trigger={<Button primary floated='right'>Add Photo</Button>}>
-//       <Modal.Header>Select a Photo</Modal.Header>
-//       <Modal.Content>
-//         <PhotoPicker preview onPick={(data) => createPhoto(data, props.state, props.dispatch)} />
-//       </Modal.Content>
-//     </Modal>
-//   );
-// };
+}
 
 export default AlbumDetail;

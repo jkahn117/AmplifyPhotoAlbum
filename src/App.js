@@ -43,8 +43,8 @@ function App() {
         <Router>
           <Albums path='/' />
           <AlbumDetail path='/album/:albumId'/>
-        </Router>
-      </Container>      
+       </Router>
+      </Container>    
     </div>
   );
 }

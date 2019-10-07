@@ -1,18 +1,6 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
+import { Button, Dimmer, Divider, Grid, Header, Icon, List, Loader, Modal, Segment } from 'semantic-ui-react';
 import Predictions from '@aws-amplify/predictions';
-
-import {
-  Button,
-  Dimmer,
-  Divider,
-  Grid,
-  Header,
-  Icon,
-  List,
-  Loader,
-  Modal,
-  Segment
-} from 'semantic-ui-react';
 
 function PhotoPicker(props) {
   const fileInput = useRef(null);
@@ -60,8 +48,9 @@ function ResultPane(props) {
     if (!file) { return; }
 
     setIsAnalyzing(true);
-
+  
     try {
+      // Use the Amplify Predictions model to identify entities in the photo
       let result = await Predictions.identify({
         entities: {
           source: {
@@ -70,23 +59,23 @@ function ResultPane(props) {
           celebrityDetection: true
         }
       });
-
+  
       const entities = result.entities;
-      console.log(entities);
       let celebs = [];
       let boxes = [];
-
+  
+      // For each found entity, capture celebrity name and face bounding box
       entities.forEach(({ boundingBox, metadata: { name='' } }) => {
         if (boundingBox) { boxes.push(boundingBox); }
         if (name) { celebs.push(name); }
       });
-
+  
       setBoundingBoxes(boxes);
       setCelebrities(celebs);
     } catch (error) {
       console.error('[identify] ', error);
     }
-
+  
     setIsAnalyzing(false);
   }
 
@@ -185,7 +174,7 @@ function CanvasImage(props) {
 };
 
 function MLPhotoPicker(props) {
-  const { open, trigger, onPick } = props;
+  const { open, onClose, onPick, trigger } = props;
 
   const initalState = {
     src: '',
@@ -210,8 +199,6 @@ function MLPhotoPicker(props) {
     const { file } = data;
     dispatch({ type: 'setFile', file, data });
 
-    if (onPick) { /*onPick(data);*/ }
-
     const reader = new FileReader();
     reader.onload = function(e) {
       const url = e.target.result;
@@ -227,7 +214,7 @@ function MLPhotoPicker(props) {
   }
 
   return (
-    <Modal size='small' trigger={ trigger } open={ open }>
+    <Modal size='small' closeIcon trigger={ trigger } open={ open } onClose={ onClose }>
       <Modal.Header>Add Photo</Modal.Header>
       <Modal.Content image>        
         <Modal.Description>
