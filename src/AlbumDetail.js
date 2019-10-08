@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useReducer } from 'react';
-import { Button, Card, Header, Icon, Image, Message, Modal } from 'semantic-ui-react';
+import { Button, Card, Header, Icon, Image, Input, Loader, Message, /* Modal */ Segment } from 'semantic-ui-react';
 import { API, Storage, graphqlOperation } from 'aws-amplify';
-import { S3Image, PhotoPicker } from 'aws-amplify-react';
+import { S3Image /*, PhotoPicker */ } from 'aws-amplify-react';
 import awsconfig from './aws-exports';
 import uuid from 'uuid/v4';
 
+import useAmplifyAuth from './useAmplifyAuth';
 import MLPhotoPickerModal from './MLPhotoPickerModal';
 
 import { getAlbum as getAlbumQuery } from './graphql/queries';
 import { createPhoto as createPhotoMutation } from './graphql/mutations';
+import { updateAlbum as updateAlbumMutation } from './graphql/mutations';
 
 function PhotoCard(props) {
   const [src, setSrc] = useState('');
@@ -16,7 +18,10 @@ function PhotoCard(props) {
 
   return (
     <Card>
-      <S3Image hidden level='protected' imgKey={ thumbnail ? thumbnail.key : fullsize.key } onLoad={ url => setSrc(url) } />
+      <S3Image hidden level='protected'
+            identityId={ props.owner || null }
+            imgKey={ thumbnail ? thumbnail.key : fullsize.key }
+            onLoad={ url => setSrc(url) } />
       <Image src={ src } />
       <Card.Content extra>
         <p><Icon name='calendar' /> { createdAt }</p>
@@ -33,7 +38,7 @@ function PhotoGrid(props) {
     <Card.Group itemsPerRow={3}>
       {
         props.photos.map((photo, i) => (
-          <PhotoCard key={ i } photo={ photo } />
+          <PhotoCard key={ i } photo={ photo } owner={ props.owner } />
         ))
       }
     </Card.Group>
@@ -49,6 +54,7 @@ function AlbumDetail(props) {
   const initalState = {
     album: {},
     photos: [],
+    currentUser: null,
     // user interface
     isLoading: false,
     message: '',
@@ -57,6 +63,7 @@ function AlbumDetail(props) {
 
   const [openModal, showModal] = useState(false);
   const [state, dispatch] = useReducer(reducer, initalState);
+  const { state: { user } } = useAmplifyAuth();
 
   // add subscription for new photos in this album
 
@@ -64,6 +71,12 @@ function AlbumDetail(props) {
     dispatch({ type: 'init' });
     getAlbum(props.albumId, dispatch);
   }, [props.albumId]);
+
+  useEffect(() => {
+    if (!user) { return; }
+    const { username } = user;
+    dispatch({ type: 'user', username });
+  }, [user]);
   
   function reducer(state, action) {
     switch(action.type) {
@@ -76,6 +89,9 @@ function AlbumDetail(props) {
           album: action.album,
           photos: action.album.photos.items ? action.album.photos.items : []
         };
+      case 'user':
+        console.log(action.user)
+        return { ...state, currentUser: action.username }
       case 'message':
         return { ...state, message: action.message };
       case 'error':
@@ -130,27 +146,67 @@ function AlbumDetail(props) {
   ) : (
     <div>
       {/* <Modal size='small' closeIcon
-             open={openModal}
-             onClose={() => { showModal(false) }}
-             trigger={<Button primary floated='right' onClick={() => {showModal(true) }}>Add Photo</Button>}>
+            open={openModal}
+            onClose={() => { showModal(false) }}
+            trigger={<Button primary floated='right' onClick={() => {showModal(true) }}>Add Photo</Button>}>
         <Modal.Header>Upload Photo</Modal.Header>
         <Modal.Content>
           { state.message }
           <PhotoPicker preview onPick={(data) => createPhoto(data, state, dispatch)} />
         </Modal.Content>
-      </Modal>*/}
+      </Modal> */}
       
       <MLPhotoPickerModal
-         open={openModal}
-         onClose={() => { showModal(false) }}
-         trigger={ <Button primary floated='right' onClick={() => {showModal(true) }}>Add Photo</Button> }
-         onPick={ (data) => createPhoto(data, state, dispatch) }/>
+          open={openModal}
+          onClose={() => { showModal(false) }}
+          trigger={ <Button primary floated='right' onClick={() => { showModal(true) }}>Add Photo</Button> }
+          onPick={ (data) => createPhoto(data, state, dispatch) }/>
     
       <Header as='h1'>{ state.album.name }</Header>
       { state.message &&
         <Message><p>{ state.message }</p></Message> }
-      <PhotoGrid photos={ state.photos } />
+      <PhotoGrid photos={ state.photos } owner={ state.album.ownerId } />
+
+      { state.currentUser === state.album.owner &&
+        <AlbumSharing album={ state.album } />}
     </div>
+  );
+}
+
+function AlbumSharing(props) {
+  const [newUser, setNewUser] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  async function addMember() {
+    setIsLoading(true);
+    const inputData = {
+      id: props.album.id,
+      viewers: [ ...props.album.viewers || [], newUser ]
+    };
+
+    const result = await API.graphql(graphqlOperation(updateAlbumMutation, { input: inputData }));
+    console.log(`${newUser} is now a viewer of album ${result.data.updateAlbum.id}`);
+    setNewUser('');
+    setIsLoading(false);
+  };
+
+  return (
+    <Segment size='small'>
+      <Header as='h4'>Album shared with...</Header>
+      <p>
+      { props.album.viewers ? props.album.viewers.join(', ') : 'No one' }
+      </p>
+
+      <Input placeholder='add viewer'
+        size='small'
+        disabled={isLoading}
+        action={{ icon: 'user add', onClick: addMember }}
+        onChange={ e => setNewUser(e.target.value) }
+        value={ newUser } />
+      <span style={{ 'paddingLeft': '1rem' }}>
+        <Loader active={isLoading} inline size='small'/>
+      </span>
+    </Segment>
   );
 }
 

@@ -1,22 +1,16 @@
-type User
-  @model(subscriptions: null)
+type Album
+  @model
   @auth(
     rules: [
-      { allow: owner, ownerField: "id", operations: [create, update, delete] }
+      { allow: owner },
+      { allow: owner, ownerField: "viewers", operations: [ read ] }  
     ]
   )
 {
   id: ID!
-  username: String!
-  albums: [Album] @connection
-}
-
-type Album
-  @model
-  @auth(rules: [{ allow: owner }])
-{
-  id: ID!
+  viewers: [String]
   owner: ID!
+  ownerId: String!
   name: String!
   createdAt: String
   updatedAt: String

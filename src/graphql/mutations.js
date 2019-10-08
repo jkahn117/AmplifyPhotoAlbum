@@ -1,70 +1,12 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const createUser = `mutation CreateUser($input: CreateUserInput!) {
-  createUser(input: $input) {
-    id
-    username
-    albums {
-      items {
-        id
-        owner
-        name
-        createdAt
-        updatedAt
-        photos {
-          nextToken
-        }
-      }
-      nextToken
-    }
-  }
-}
-`;
-export const updateUser = `mutation UpdateUser($input: UpdateUserInput!) {
-  updateUser(input: $input) {
-    id
-    username
-    albums {
-      items {
-        id
-        owner
-        name
-        createdAt
-        updatedAt
-        photos {
-          nextToken
-        }
-      }
-      nextToken
-    }
-  }
-}
-`;
-export const deleteUser = `mutation DeleteUser($input: DeleteUserInput!) {
-  deleteUser(input: $input) {
-    id
-    username
-    albums {
-      items {
-        id
-        owner
-        name
-        createdAt
-        updatedAt
-        photos {
-          nextToken
-        }
-      }
-      nextToken
-    }
-  }
-}
-`;
 export const createAlbum = `mutation CreateAlbum($input: CreateAlbumInput!) {
   createAlbum(input: $input) {
     id
+    viewers
     owner
+    ownerId
     name
     createdAt
     updatedAt
@@ -75,7 +17,9 @@ export const createAlbum = `mutation CreateAlbum($input: CreateAlbumInput!) {
         updatedAt
         album {
           id
+          viewers
           owner
+          ownerId
           name
           createdAt
           updatedAt
@@ -108,7 +52,9 @@ export const createAlbum = `mutation CreateAlbum($input: CreateAlbumInput!) {
 export const updateAlbum = `mutation UpdateAlbum($input: UpdateAlbumInput!) {
   updateAlbum(input: $input) {
     id
+    viewers
     owner
+    ownerId
     name
     createdAt
     updatedAt
@@ -119,7 +65,9 @@ export const updateAlbum = `mutation UpdateAlbum($input: UpdateAlbumInput!) {
         updatedAt
         album {
           id
+          viewers
           owner
+          ownerId
           name
           createdAt
           updatedAt
@@ -152,7 +100,9 @@ export const updateAlbum = `mutation UpdateAlbum($input: UpdateAlbumInput!) {
 export const deleteAlbum = `mutation DeleteAlbum($input: DeleteAlbumInput!) {
   deleteAlbum(input: $input) {
     id
+    viewers
     owner
+    ownerId
     name
     createdAt
     updatedAt
@@ -163,7 +113,9 @@ export const deleteAlbum = `mutation DeleteAlbum($input: DeleteAlbumInput!) {
         updatedAt
         album {
           id
+          viewers
           owner
+          ownerId
           name
           createdAt
           updatedAt
@@ -200,7 +152,9 @@ export const createPhoto = `mutation CreatePhoto($input: CreatePhotoInput!) {
     updatedAt
     album {
       id
+      viewers
       owner
+      ownerId
       name
       createdAt
       updatedAt
@@ -246,7 +200,9 @@ export const deletePhoto = `mutation DeletePhoto($input: DeletePhotoInput!) {
     updatedAt
     album {
       id
+      viewers
       owner
+      ownerId
       name
       createdAt
       updatedAt
@@ -292,7 +248,9 @@ export const updatePhoto = `mutation UpdatePhoto($input: UpdatePhotoInput!) {
     updatedAt
     album {
       id
+      viewers
       owner
+      ownerId
       name
       createdAt
       updatedAt

@@ -4,7 +4,9 @@
 export const onCreateAlbum = `subscription OnCreateAlbum($owner: String!) {
   onCreateAlbum(owner: $owner) {
     id
+    viewers
     owner
+    ownerId
     name
     createdAt
     updatedAt
@@ -15,7 +17,9 @@ export const onCreateAlbum = `subscription OnCreateAlbum($owner: String!) {
         updatedAt
         album {
           id
+          viewers
           owner
+          ownerId
           name
           createdAt
           updatedAt
@@ -48,7 +52,9 @@ export const onCreateAlbum = `subscription OnCreateAlbum($owner: String!) {
 export const onUpdateAlbum = `subscription OnUpdateAlbum($owner: String!) {
   onUpdateAlbum(owner: $owner) {
     id
+    viewers
     owner
+    ownerId
     name
     createdAt
     updatedAt
@@ -59,7 +65,9 @@ export const onUpdateAlbum = `subscription OnUpdateAlbum($owner: String!) {
         updatedAt
         album {
           id
+          viewers
           owner
+          ownerId
           name
           createdAt
           updatedAt
@@ -92,7 +100,9 @@ export const onUpdateAlbum = `subscription OnUpdateAlbum($owner: String!) {
 export const onDeleteAlbum = `subscription OnDeleteAlbum($owner: String!) {
   onDeleteAlbum(owner: $owner) {
     id
+    viewers
     owner
+    ownerId
     name
     createdAt
     updatedAt
@@ -103,7 +113,9 @@ export const onDeleteAlbum = `subscription OnDeleteAlbum($owner: String!) {
         updatedAt
         album {
           id
+          viewers
           owner
+          ownerId
           name
           createdAt
           updatedAt
@@ -140,7 +152,9 @@ export const onCreatePhoto = `subscription OnCreatePhoto($owner: String!) {
     updatedAt
     album {
       id
+      viewers
       owner
+      ownerId
       name
       createdAt
       updatedAt
@@ -186,7 +200,9 @@ export const onDeletePhoto = `subscription OnDeletePhoto($owner: String!) {
     updatedAt
     album {
       id
+      viewers
       owner
+      ownerId
       name
       createdAt
       updatedAt
@@ -232,7 +248,9 @@ export const onUpdatePhoto = `subscription OnUpdatePhoto($owner: String!) {
     updatedAt
     album {
       id
+      viewers
       owner
+      ownerId
       name
       createdAt
       updatedAt

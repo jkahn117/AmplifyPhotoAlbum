@@ -36,7 +36,7 @@ function useAmplifyAuth() {
 
       try {
         if (isMounted) {
-          const authData = await Auth.currentAuthenticatedUser();
+          const authData = await Auth.currentUserInfo();
           if (authData) {
             dispatch({ type: 'success', user: authData });
           }

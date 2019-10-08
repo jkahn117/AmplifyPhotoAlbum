@@ -43,24 +43,25 @@ async function listAlbums(dispatch) {
 }
 
 async function createAlbum(user, state, dispatch) {
-    const { newAlbumName } = state;
-   const newAlbum = {
-     name: newAlbumName,
-     owner: user.username
-   };
+  const { newAlbumName } = state;
+  const newAlbum = {
+    name: newAlbumName,
+    owner: user.username,
+    ownerId: user.id
+  };
 
-   try {
-     await API.graphql(graphqlOperation(createAlbumMutation, { input: newAlbum }));
-     dispatch({ type: 'reset' });
-     console.log('New album created');
-   } catch (error) {
-     dispatch({ type: 'error' });
-     console.error('[ERROR - createAlbum] ', error);
-   }
+  try {
+    await API.graphql(graphqlOperation(createAlbumMutation, { input: newAlbum }));
+    dispatch({ type: 'reset' });
+    console.log('New album created');
+  } catch (error) {
+    dispatch({ type: 'error' });
+    console.error('[ERROR - createAlbum] ', error);
+  }
 }
 
 function update(value, inputValue, dispatch) {
-    dispatch({ type: 'input', value, inputValue });
+  dispatch({ type: 'input', value, inputValue });
 }
 
 function AlbumList(props) {
@@ -86,14 +87,14 @@ function Albums(props) {
   }, []);
   
   useEffect(() => {
-     if (!user) { return; }
-       const { username } = user;
-       const subscription = API.graphql(graphqlOperation(onCreateAlbum, { owner: username })).subscribe({
-          next: (data) => {
-            const album = data.value.data.onCreateAlbum;
-            dispatch({ type: 'add', album });
-          }
-        });
+    if (!user) { return; }
+    const { username } = user;
+    const subscription = API.graphql(graphqlOperation(onCreateAlbum, { owner: username })).subscribe({
+      next: (data) => {
+        const album = data.value.data.onCreateAlbum;
+        dispatch({ type: 'add', album });
+      }
+    });
 
     return () => {
       subscription.unsubscribe();
