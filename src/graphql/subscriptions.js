@@ -1,6 +1,56 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const onAlbumPhotosChange = `subscription OnAlbumPhotosChange($photoAlbumId: ID!) {
+  onAlbumPhotosChange(photoAlbumId: $photoAlbumId) {
+    id
+    createdAt
+    updatedAt
+    album {
+      id
+      viewers
+      owner
+      ownerId
+      name
+      createdAt
+      updatedAt
+      photos {
+        items {
+          id
+          createdAt
+          updatedAt
+          contentType
+          height
+          width
+          photoAlbumId
+          owner
+        }
+        nextToken
+      }
+    }
+    fullsize {
+      region
+      bucket
+      key
+    }
+    thumbnail {
+      region
+      bucket
+      key
+    }
+    contentType
+    gps {
+      latitude
+      longitude
+      altitude
+    }
+    height
+    width
+    photoAlbumId
+    owner
+  }
+}
+`;
 export const onCreateAlbum = `subscription OnCreateAlbum($owner: String!) {
   onCreateAlbum(owner: $owner) {
     id
@@ -42,6 +92,7 @@ export const onCreateAlbum = `subscription OnCreateAlbum($owner: String!) {
         }
         height
         width
+        photoAlbumId
         owner
       }
       nextToken
@@ -90,6 +141,7 @@ export const onUpdateAlbum = `subscription OnUpdateAlbum($owner: String!) {
         }
         height
         width
+        photoAlbumId
         owner
       }
       nextToken
@@ -138,6 +190,7 @@ export const onDeleteAlbum = `subscription OnDeleteAlbum($owner: String!) {
         }
         height
         width
+        photoAlbumId
         owner
       }
       nextToken
@@ -166,6 +219,7 @@ export const onCreatePhoto = `subscription OnCreatePhoto($owner: String!) {
           contentType
           height
           width
+          photoAlbumId
           owner
         }
         nextToken
@@ -189,6 +243,7 @@ export const onCreatePhoto = `subscription OnCreatePhoto($owner: String!) {
     }
     height
     width
+    photoAlbumId
     owner
   }
 }
@@ -214,6 +269,7 @@ export const onDeletePhoto = `subscription OnDeletePhoto($owner: String!) {
           contentType
           height
           width
+          photoAlbumId
           owner
         }
         nextToken
@@ -237,6 +293,7 @@ export const onDeletePhoto = `subscription OnDeletePhoto($owner: String!) {
     }
     height
     width
+    photoAlbumId
     owner
   }
 }
@@ -262,6 +319,7 @@ export const onUpdatePhoto = `subscription OnUpdatePhoto($owner: String!) {
           contentType
           height
           width
+          photoAlbumId
           owner
         }
         nextToken
@@ -285,6 +343,7 @@ export const onUpdatePhoto = `subscription OnUpdatePhoto($owner: String!) {
     }
     height
     width
+    photoAlbumId
     owner
   }
 }

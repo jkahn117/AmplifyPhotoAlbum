@@ -42,6 +42,7 @@ export const createAlbum = `mutation CreateAlbum($input: CreateAlbumInput!) {
         }
         height
         width
+        photoAlbumId
         owner
       }
       nextToken
@@ -90,6 +91,7 @@ export const updateAlbum = `mutation UpdateAlbum($input: UpdateAlbumInput!) {
         }
         height
         width
+        photoAlbumId
         owner
       }
       nextToken
@@ -138,6 +140,7 @@ export const deleteAlbum = `mutation DeleteAlbum($input: DeleteAlbumInput!) {
         }
         height
         width
+        photoAlbumId
         owner
       }
       nextToken
@@ -166,6 +169,7 @@ export const createPhoto = `mutation CreatePhoto($input: CreatePhotoInput!) {
           contentType
           height
           width
+          photoAlbumId
           owner
         }
         nextToken
@@ -189,6 +193,7 @@ export const createPhoto = `mutation CreatePhoto($input: CreatePhotoInput!) {
     }
     height
     width
+    photoAlbumId
     owner
   }
 }
@@ -214,6 +219,7 @@ export const deletePhoto = `mutation DeletePhoto($input: DeletePhotoInput!) {
           contentType
           height
           width
+          photoAlbumId
           owner
         }
         nextToken
@@ -237,6 +243,7 @@ export const deletePhoto = `mutation DeletePhoto($input: DeletePhotoInput!) {
     }
     height
     width
+    photoAlbumId
     owner
   }
 }
@@ -262,6 +269,7 @@ export const updatePhoto = `mutation UpdatePhoto($input: UpdatePhotoInput!) {
           contentType
           height
           width
+          photoAlbumId
           owner
         }
         nextToken
@@ -285,6 +293,7 @@ export const updatePhoto = `mutation UpdatePhoto($input: UpdatePhotoInput!) {
     }
     height
     width
+    photoAlbumId
     owner
   }
 }

@@ -4,45 +4,25 @@
 export const getAlbum = `query GetAlbum($id: ID!) {
   getAlbum(id: $id) {
     id
-    viewers
     owner
     ownerId
+    viewers
     name
     createdAt
-    updatedAt
     photos {
       items {
         id
         createdAt
-        updatedAt
-        album {
-          id
-          viewers
-          owner
-          ownerId
-          name
-          createdAt
-          updatedAt
+        thumbnail {
+          key
         }
         fullsize {
-          region
-          bucket
           key
         }
-        thumbnail {
-          region
-          bucket
-          key
-        }
-        contentType
         gps {
           latitude
           longitude
-          altitude
         }
-        height
-        width
-        owner
       }
       nextToken
     }
@@ -71,6 +51,7 @@ export const listAlbums = `query ListAlbums(
           contentType
           height
           width
+          photoAlbumId
           owner
         }
         nextToken
@@ -101,6 +82,7 @@ export const getPhoto = `query GetPhoto($id: ID!) {
           contentType
           height
           width
+          photoAlbumId
           owner
         }
         nextToken
@@ -124,6 +106,7 @@ export const getPhoto = `query GetPhoto($id: ID!) {
     }
     height
     width
+    photoAlbumId
     owner
   }
 }
@@ -168,6 +151,7 @@ export const listPhotos = `query ListPhotos(
       }
       height
       width
+      photoAlbumId
       owner
     }
     nextToken

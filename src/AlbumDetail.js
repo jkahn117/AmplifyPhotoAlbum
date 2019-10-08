@@ -11,6 +11,7 @@ import MLPhotoPickerModal from './MLPhotoPickerModal';
 import { getAlbum as getAlbumQuery } from './graphql/queries';
 import { createPhoto as createPhotoMutation } from './graphql/mutations';
 import { updateAlbum as updateAlbumMutation } from './graphql/mutations';
+import { onAlbumPhotosChange } from './graphql/subscriptions';
 
 function PhotoCard(props) {
   const [src, setSrc] = useState('');
@@ -65,11 +66,22 @@ function AlbumDetail(props) {
   const [state, dispatch] = useReducer(reducer, initalState);
   const { state: { user } } = useAmplifyAuth();
 
-  // add subscription for new photos in this album
-
   useEffect(() => {
     dispatch({ type: 'init' });
     getAlbum(props.albumId, dispatch);
+  }, [props.albumId]);
+
+  useEffect(() => {
+    const subscription = API.graphql(graphqlOperation(onAlbumPhotosChange, { photoAlbumId: props.albumId })).subscribe({
+      next: (data) => {
+        const photo = data.value.data.onAlbumPhotosChange;
+        dispatch({ type: 'addPhoto', newPhoto: photo })
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [props.albumId]);
 
   useEffect(() => {
@@ -89,8 +101,9 @@ function AlbumDetail(props) {
           album: action.album,
           photos: action.album.photos.items ? action.album.photos.items : []
         };
+      case 'addPhoto':
+        return { ...state, photos: [...state.photos, action.newPhoto] }
       case 'user':
-        console.log(action.user)
         return { ...state, currentUser: action.username }
       case 'message':
         return { ...state, message: action.message };
@@ -156,11 +169,12 @@ function AlbumDetail(props) {
         </Modal.Content>
       </Modal> */}
       
-      <MLPhotoPickerModal
-          open={openModal}
-          onClose={() => { showModal(false) }}
-          trigger={ <Button primary floated='right' onClick={() => { showModal(true) }}>Add Photo</Button> }
-          onPick={ (data) => createPhoto(data, state, dispatch) }/>
+      { state.currentUser === state.album.owner &&
+        <MLPhotoPickerModal
+            open={openModal}
+            onClose={() => { showModal(false) }}
+            trigger={ <Button primary floated='right' onClick={() => { showModal(true) }}>Add Photo</Button> }
+            onPick={ (data) => createPhoto(data, state, dispatch) }/> }
     
       <Header as='h1'>{ state.album.name }</Header>
       { state.message &&
@@ -174,8 +188,13 @@ function AlbumDetail(props) {
 }
 
 function AlbumSharing(props) {
+  const [viewers, setViewers] = useState([]);
   const [newUser, setNewUser] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setViewers(props.album.viewers || []);
+  }, [props.album]);
 
   async function addMember() {
     setIsLoading(true);
@@ -186,6 +205,8 @@ function AlbumSharing(props) {
 
     const result = await API.graphql(graphqlOperation(updateAlbumMutation, { input: inputData }));
     console.log(`${newUser} is now a viewer of album ${result.data.updateAlbum.id}`);
+    
+    setViewers([...viewers, newUser]);
     setNewUser('');
     setIsLoading(false);
   };
@@ -193,9 +214,7 @@ function AlbumSharing(props) {
   return (
     <Segment size='small'>
       <Header as='h4'>Album shared with...</Header>
-      <p>
-      { props.album.viewers ? props.album.viewers.join(', ') : 'No one' }
-      </p>
+      <p>{ viewers.length > 0 ? viewers.join(', ') : 'No one' }</p>
 
       <Input placeholder='add viewer'
         size='small'
@@ -204,7 +223,7 @@ function AlbumSharing(props) {
         onChange={ e => setNewUser(e.target.value) }
         value={ newUser } />
       <span style={{ 'paddingLeft': '1rem' }}>
-        <Loader active={isLoading} inline size='small'/>
+        <Loader active={ isLoading } inline size='small'/>
       </span>
     </Segment>
   );

@@ -36,6 +36,7 @@ type Photo
   gps: GPS
   height: Int
   width: Int
+  photoAlbumId: String  # enable subscription for photos changes in an album
 }
 
 type S3Object @aws_iam @aws_cognito_user_pools {
@@ -48,4 +49,9 @@ type GPS {
   latitude: String!
   longitude: String!
   altitude: Float!
+}
+
+type Subscription {
+  onAlbumPhotosChange(photoAlbumId: ID!): Photo
+    @aws_subscribe(mutations: ["createPhoto", "deletePhoto", "updatePhoto"])
 }
