@@ -174,7 +174,10 @@ function AlbumDetail(props) {
             open={openModal}
             onClose={() => { showModal(false) }}
             trigger={ <Button primary floated='right' onClick={() => { showModal(true) }}>Add Photo</Button> }
-            onPick={ (data) => createPhoto(data, state, dispatch) }/> }
+            onPick={ (data) => {
+              showModal(false);
+              createPhoto(data, state, dispatch);
+            }} /> }
     
       <Header as='h1'>{ state.album.name }</Header>
       { state.message &&
