@@ -1,16 +1,14 @@
 import React from 'react';
+import { Container, Menu } from 'semantic-ui-react';
 import { Router, Link } from "@reach/router";
 
 import { withAuthenticator } from 'aws-amplify-react';
 import useAmplifyAuth from './useAmplifyAuth';
+
 import Albums from './Albums';
 import AlbumDetail from './AlbumDetail';
 
-import {
-  Container,
-  Menu
-} from 'semantic-ui-react';
-
+export const UserContext = React.createContext();
 
 function App() {
   const { state: { user }, onSignOut } = useAmplifyAuth();
@@ -40,10 +38,12 @@ function App() {
       </Menu>
 
       <Container text style={{ marginTop: '5em' }}>
-        <Router>
-          <Albums path='/' />
-          <AlbumDetail path='/album/:albumId'/>
-        </Router>
+        <UserContext.Provider user={ user }>
+          <Router>
+            <Albums path='/' user={ user } />
+            <AlbumDetail path='/album/:albumId' user={ user }/>
+          </Router>
+        </UserContext.Provider>
       </Container>    
     </div>
   );

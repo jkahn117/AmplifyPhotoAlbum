@@ -3,7 +3,6 @@ import { Button, Form, Grid, Header, Input } from 'semantic-ui-react';
 import { API, graphqlOperation } from 'aws-amplify';
 import { Link } from "@reach/router";
 
-import useAmplifyAuth from './useAmplifyAuth';
 import { listAlbums as listAlbumsQuery } from './graphql/queries';
 import { createAlbum as createAlbumMutation } from './graphql/mutations';
 import { onCreateAlbum } from './graphql/subscriptions';
@@ -78,9 +77,8 @@ function AlbumList(props) {
   );
 }
 
-function Albums(props) {
+function Albums({ user }) {
   const [state, dispatch] = useReducer(reducer, initalState);
-  const { state: { user } } = useAmplifyAuth();
 
   useEffect(() => {
     listAlbums(dispatch);

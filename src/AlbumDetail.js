@@ -5,7 +5,6 @@ import { S3Image /*, PhotoPicker */ } from 'aws-amplify-react';
 import awsconfig from './aws-exports';
 import uuid from 'uuid/v4';
 
-import useAmplifyAuth from './useAmplifyAuth';
 import MLPhotoPickerModal from './MLPhotoPickerModal';
 
 import { getAlbum as getAlbumQuery } from './graphql/queries';
@@ -46,7 +45,7 @@ function PhotoGrid(props) {
   );
 }
 
-function AlbumDetail(props) {
+function AlbumDetail({ albumId, user }) {
   const {
     aws_user_files_s3_bucket_region: region,
     aws_user_files_s3_bucket: bucket
@@ -55,7 +54,6 @@ function AlbumDetail(props) {
   const initalState = {
     album: {},
     photos: [],
-    currentUser: null,
     // user interface
     isLoading: false,
     message: '',
@@ -64,15 +62,14 @@ function AlbumDetail(props) {
 
   const [openModal, showModal] = useState(false);
   const [state, dispatch] = useReducer(reducer, initalState);
-  const { state: { user } } = useAmplifyAuth();
 
   useEffect(() => {
     dispatch({ type: 'init' });
-    getAlbum(props.albumId, dispatch);
-  }, [props.albumId]);
+    getAlbum(albumId, dispatch);
+  }, [ albumId ]);
 
   useEffect(() => {
-    const subscription = API.graphql(graphqlOperation(onAlbumPhotosChange, { photoAlbumId: props.albumId })).subscribe({
+    const subscription = API.graphql(graphqlOperation(onAlbumPhotosChange, { photoAlbumId: albumId })).subscribe({
       next: (data) => {
         const photo = data.value.data.onAlbumPhotosChange;
         dispatch({ type: 'addPhoto', newPhoto: photo })
@@ -82,13 +79,7 @@ function AlbumDetail(props) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [props.albumId]);
-
-  useEffect(() => {
-    if (!user) { return; }
-    const { username } = user;
-    dispatch({ type: 'user', username });
-  }, [user]);
+  }, [albumId]);
   
   function reducer(state, action) {
     switch(action.type) {
@@ -103,8 +94,6 @@ function AlbumDetail(props) {
         };
       case 'addPhoto':
         return { ...state, photos: [...state.photos, action.newPhoto] }
-      case 'user':
-        return { ...state, currentUser: action.username }
       case 'message':
         return { ...state, message: action.message };
       case 'error':
@@ -158,18 +147,7 @@ function AlbumDetail(props) {
     <p>loading...</p>
   ) : (
     <div>
-      {/* <Modal size='small' closeIcon
-            open={openModal}
-            onClose={() => { showModal(false) }}
-            trigger={<Button primary floated='right' onClick={() => {showModal(true) }}>Add Photo</Button>}>
-        <Modal.Header>Upload Photo</Modal.Header>
-        <Modal.Content>
-          { state.message }
-          <PhotoPicker preview onPick={(data) => createPhoto(data, state, dispatch)} />
-        </Modal.Content>
-      </Modal> */}
-      
-      { state.currentUser === state.album.owner &&
+      { user && user.username === state.album.owner &&
         <MLPhotoPickerModal
             open={openModal}
             onClose={() => { showModal(false) }}
@@ -184,7 +162,7 @@ function AlbumDetail(props) {
         <Message><p>{ state.message }</p></Message> }
       <PhotoGrid photos={ state.photos } owner={ state.album.ownerId } />
 
-      { state.currentUser === state.album.owner &&
+      { user && user.username === state.album.owner &&
         <AlbumSharing album={ state.album } />}
     </div>
   );
